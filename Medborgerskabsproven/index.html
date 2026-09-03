@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plano de estudo — Medborgerskabsprøven</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FAF6EF;
+    --paper:#FFFFFF;
+    --ink:#211D18;
+    --ink-soft:#5B564C;
+    --line:#E4DCCB;
+    --brick:#B3402A;
+    --navy:#2C4A52;
+    --navy-wash:#EAF0EF;
+    --done:#5C7A5A;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', sans-serif;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{
+    max-width:780px;
+    margin:0 auto;
+    padding:56px 24px 96px;
+  }
+ 
+  header{margin-bottom:36px;}
+  .eyebrow{
+    color:var(--brick);
+    font-weight:600;
+    font-size:14px;
+    margin-bottom:10px;
+  }
+  h1{
+    font-size:clamp(28px,5vw,40px);
+    font-weight:700;
+    margin:0 0 14px;
+    letter-spacing:-0.01em;
+  }
+  .lede{
+    color:var(--ink-soft);
+    font-size:16px;
+    max-width:58ch;
+    margin:0;
+  }
+ 
+  .facts{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:1px;
+    background:var(--line);
+    border:1px solid var(--line);
+    border-radius:10px;
+    overflow:hidden;
+    margin:28px 0 20px;
+  }
+  .fact{background:var(--paper);padding:16px 18px;}
+  .fact .num{font-size:22px;font-weight:700;color:var(--navy);}
+  .fact .label{font-size:13px;color:var(--ink-soft);margin-top:2px;}
+ 
+  .legend{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    font-size:13px;
+    color:var(--ink-soft);
+    margin-bottom:34px;
+  }
+  .legend .star{color:var(--brick);font-weight:700;}
+  .legend .row{display:flex;align-items:center;gap:8px;}
+ 
+  .progress-row{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    margin-bottom:40px;
+    position:sticky;
+    top:0;
+    background:var(--bg);
+    padding:12px 0;
+    z-index:5;
+  }
+  .progress-track{
+    flex:1;height:8px;background:var(--line);border-radius:99px;overflow:hidden;
+  }
+  .progress-fill{height:100%;width:0%;background:var(--brick);border-radius:99px;transition:width .35s ease;}
+  .progress-label{font-size:13px;color:var(--ink-soft);white-space:nowrap;min-width:70px;text-align:right;}
+ 
+  .timeline{position:relative;padding-left:52px;}
+  .timeline::before{
+    content:"";position:absolute;left:19px;top:6px;bottom:6px;width:2px;background:var(--line);
+  }
+  .phase{position:relative;margin-bottom:36px;}
+  .phase:last-child{margin-bottom:0;}
+  .marker{
+    position:absolute;left:-52px;top:0;width:40px;height:40px;border-radius:50%;
+    background:var(--paper);border:2px solid var(--navy);color:var(--navy);
+    display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;
+  }
+  .phase-card{
+    background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:22px 24px 20px;
+  }
+  .phase-when{font-size:13px;font-weight:600;color:var(--brick);margin-bottom:4px;}
+  .phase-title{font-size:19px;font-weight:700;margin:0 0 14px;}
+ 
+  /* topic (level 1) */
+  .topic{border-top:1px solid var(--line);}
+  .topic:first-child{border-top:none;}
+  .topic-head{
+    display:flex;align-items:center;gap:10px;padding:10px 0;cursor:pointer;user-select:none;
+  }
+  .topic-head .arrow{
+    flex:none;width:16px;height:16px;color:var(--ink-soft);
+    transition:transform .18s ease;
+  }
+  .topic.open .arrow{transform:rotate(90deg);}
+  .topic-name{font-size:15px;font-weight:600;flex:1;}
+  .topic-count{font-size:12.5px;color:var(--ink-soft);white-space:nowrap;}
+ 
+  /* body shown when topic open */
+  .topic-body{display:none;padding:0 0 14px 26px;}
+  .topic.open .topic-body{display:block;}
+ 
+  .sub-label{
+    font-size:11.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
+    color:var(--ink-soft);margin:10px 0 2px;
+  }
+  .sub-label.examq{color:var(--brick);}
+ 
+  ul.subitems{list-style:none;margin:0;padding:0;}
+  ul.subitems li{
+    display:flex;align-items:flex-start;gap:9px;padding:6px 0;cursor:pointer;
+  }
+  .check{
+    flex:none;width:17px;height:17px;margin-top:2px;border-radius:5px;
+    border:2px solid var(--navy);display:flex;align-items:center;justify-content:center;
+    transition:background .15s ease, border-color .15s ease;
+  }
+  .check svg{width:11px;height:11px;opacity:0;transition:opacity .15s ease;}
+  li.done .check{background:var(--done);border-color:var(--done);}
+  li.done .check svg{opacity:1;}
+  li.done .item-text{color:var(--ink-soft);text-decoration:line-through;text-decoration-color:var(--line);}
+  li.done .edition-badge{opacity:.5;}
+  .item-text{font-size:14.5px;flex:1;}
+  .item-text .a-line{display:block;color:var(--navy);font-size:13.5px;margin-top:1px;}
+  li.done .item-text .a-line{color:var(--ink-soft);}
+  .star-badge{flex:none;color:var(--brick);font-size:13px;font-weight:700;line-height:1.5;}
+  .edition-badge{
+    flex:none;font-size:11px;color:var(--brick);background:#FBEDE8;border-radius:99px;
+    padding:2px 8px;white-space:nowrap;align-self:flex-start;margin-top:2px;
+  }
+ 
+  /* simple checklist (phases 3 & 4) */
+  ul.items{list-style:none;margin:0;padding:0;}
+  ul.items > li{
+    display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-top:1px solid var(--line);cursor:pointer;
+  }
+  ul.items > li:first-child{border-top:none;}
+ 
+  .tip{
+    margin-top:14px;padding-top:14px;border-top:1px dashed var(--line);
+    font-size:13.5px;color:var(--ink-soft);
+  }
+  .tip b{color:var(--ink);}
+ 
+  footer{
+    margin-top:48px;padding-top:20px;border-top:1px solid var(--line);
+    font-size:13px;color:var(--ink-soft);
+  }
+  footer a{color:var(--navy);}
+</style>
+</head>
+<body>
+<div class="wrap">
+ 
+  <header>
+    <div class="eyebrow">Medborgerskabsprøven</div>
+    <h1>Plano de estudo</h1>
+    <p class="lede">Quatro fases, do primeiro contacto com o material oficial até às últimas provas de treino. Cada tema tem os seus pontos-chave e as perguntas reais já feitas em provas anteriores — estas últimas podem repetir-se, por isso vale a pena decorá-las.</p>
+  </header>
+ 
+  <div class="facts">
+    <div class="fact"><div class="num">26</div><div class="label">fakta-ark</div></div>
+    <div class="fact"><div class="num">25</div><div class="label">perguntas na prova</div></div>
+    <div class="fact"><div class="num">20/25</div><div class="label">para passar</div></div>
+  </div>
+ 
+  <div class="legend">
+    <div class="row"><span class="star">★</span> ponto-chave já cobrado numa prova anterior — priorize estes</div>
+    <div class="row"><span class="edition-badge">aaaa-mm</span> pergunta real, tirada das provas de sommer/vinter 2024–2026 — decore a pergunta e a resposta</div>
+  </div>
+ 
+  <div class="progress-row">
+    <div class="progress-track"><div class="progress-fill" id="fill"></div></div>
+    <div class="progress-label" id="label">0 de 0</div>
+  </div>
+ 
+  <div class="timeline" id="timeline"></div>
+ 
+  <footer>
+    Material oficial: <a href="https://danskogproever.dk/media/4vbfd0ac/laeremateriale-til-medborgerskabsproeven.pdf" target="_blank" rel="noopener">Læremateriale (PDF)</a> ·
+    <a href="https://danskogproever.dk/borger/medborgerskabsproeve-permanent-ophold/forberedelse-til-medborgerskabsproeven/" target="_blank" rel="noopener">Provas anteriores</a>
+  </footer>
+ 
+</div>
+ 
+<script>
+const CHECK_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg>';
+const ARROW_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="arrow"><path d="M9 6l6 6-6 6"/></svg>';
+ 
+const data = [
+  {
+    when: "Semana 1–2",
+    title: "Ler os fakta-ark 1–13",
+    tip: "Use os pontos-chave como revisão rápida, mas confirme os detalhes no PDF oficial.",
+    topics: [
+      { name: "1. Skole", points: [
+        ["Ensino obrigatório: mínimo 10 anos; folkeskole é gratuita e dura 10 anos", 0],
+        ["A maioria das crianças frequenta escolas municipais (folkeskoler)", 1],
+        ["Notas só a partir do 8.º ano, escala de -3 a 12", 0],
+        ["Elevråd (conselho de alunos) e skolebestyrelse (maioria de pais)", 0],
+        ["Friskoler/privatskoler: pais pagam, mas há apoio público", 0],
+      ], examQ: [
+        ["Em que anos letivos se pode ir para uma efterskole?", "8.º, 9.º e 10.º ano", "2025-11"],
+        ["Quantos anos de escolaridade são obrigatórios no mínimo?", "Pelo menos 10 anos", "2024-11"],
+        ["Os pais pagam para os filhos irem a uma friskole ou privatskole?", "Sim", "2024-11"],
+      ]},
+      { name: "2. Uddannelse", points: [
+        ["Após a folkeskole: gymnasiale (stx/hhx/htx/hf) ou erhvervsuddannelser", 0],
+        ["Ensino superior gratuito para cidadãos DK/UE", 0],
+        ["SU = bolsa de estudo estatal", 0],
+        ["FGU/STU apoiam jovens sem formação concluída ou com necessidades especiais", 0],
+      ], examQ: []},
+      { name: "3. Dagtilbud", points: [
+        ["Vuggestue (~6 meses–3 anos), børnehave (3–6 anos), dagpleje, SFO", 0],
+        ["O município é responsável pelos dagtilbud (creches/børnehaver)", 1],
+        ["Pais pagam parte do custo (com apoio se renda baixa)", 0],
+      ], examQ: [
+        ["Que instituição frequentam normalmente as crianças de 2 anos?", "Vuggestue", "2025-11"],
+        ["Que instituição frequentam normalmente as crianças de 4 anos?", "Børnehave", "2025-05"],
+      ]},
+      { name: "4. Det danske arbejdsmarked", points: [
+        ["\"Den danske model\": overenskomster definem salário/condições, não a lei", 0],
+        ["Flexicurity: fácil contratar/demitir + dagpenge via a-kasse", 0],
+        ["Semana normal de trabalho: 37 horas", 0],
+        ["Direito a 5–6 semanas de férias pagas por ano", 1],
+        ["Sindicatos grandes: HK, FOA, 3F", 0],
+      ], examQ: [
+        ["O que determinam as overenskomster, entre outras coisas?", "O horário de trabalho (arbejdstid)", "2025-05"],
+        ["A quanto tem normalmente direito um trabalhador em férias pagas por ano?", "5–6 semanas", "2025-05"],
+        ["Para que se deve estar filiado a uma a-kasse?", "Para poder receber subsídio de desemprego (arbejdsløshedsdagpenge)", "2025-05"],
+        ["Quantas pessoas entre 15–64 anos têm emprego, aproximadamente?", "Cerca de três em cada quatro", "2025-11"],
+        ["Quem elege o tillidsrepræsentant (delegado sindical) num local de trabalho?", "Os próprios empregados", "2024-11"],
+      ]},
+      { name: "5. Dansk erhvervsliv", points: [
+        ["Cooperativas Arla (laticínios) e Danish Crown (carne)", 0],
+        ["LEGO fabrica brinquedos (legetøj)", 1],
+        ["Novo Nordisk (insulina/medicina), Vestas (turbinas eólicas)", 0],
+        ["Maersk: um dos maiores armadores do mundo", 0],
+        ["Maior parceiro comercial da Dinamarca: Alemanha", 1],
+      ], examQ: [
+        ["O que produz principalmente a Novo Nordisk?", "Medicina (insulina)", "2025-05"],
+        ["Como evoluiu o número de agricultores desde 1960?", "Diminuiu", "2025-05"],
+        ["Qual é o maior parceiro comercial da Dinamarca?", "Alemanha", "2026-06"],
+        ["O que fabrica a LEGO?", "Brinquedos (legetøj)", "2026-06"],
+      ]},
+      { name: "6. Det danske velfærdssamfund", points: [
+        ["Financiado por impostos progressivos + IVA de 25%", 0],
+        ["A maior parte das despesas de saúde é paga via impostos e taxas", 1],
+        ["Folkepension a partir dos 67 anos (em 2026)", 0],
+      ], examQ: [
+        ["O que é 'moms'?", "Um imposto (IVA) sobre bens comprados nas lojas, entre outros", "2025-11 e 2024-11"],
+        ["Como são pagas a maior parte das despesas de saúde?", "Através de impostos e taxas (skatter og afgifter)", "2025-05"],
+      ]},
+      { name: "7. Familieliv", points: [
+        ["Casamento a partir dos 18 anos; casamento entre pessoas do mesmo sexo é permitido", 0],
+        ["~40% dos casamentos terminam em divórcio", 0],
+        ["Aborto livre até à 18.ª semana de gravidez (alargado em 2025)", 1],
+        ["Proibido bater em crianças; sexo com menores de 15 anos é crime", 0],
+      ], examQ: [
+        ["Qual a idade mínima para casar na Dinamarca?", "18 anos", "2024-11"],
+        ["Qual a idade mínima para tirar carta de condução de carro?", "18 anos", "2025-11"],
+        ["Como foi alterado o limite para aborto livre em 2025?", "Foi alargado de 12 para 18 semanas", "2025-11"],
+      ]},
+      { name: "8. Forenings- og fritidsliv", points: [
+        ["Liberdade de formar associações sem autorização prévia", 0],
+        ["Højskoler (inspiradas por N.F.S. Grundtvig) não têm exames", 0],
+        ["Emprestar livros nas bibliotecas públicas é gratuito", 1],
+      ], examQ: [
+        ["É permitido formar uma associação sem ser cidadão dinamarquês?", "Sim", "2024-11"],
+        ["Quem teve grande importância para as højskoler no séc. XIX?", "N.F.S. Grundtvig", "2024-11"],
+      ]},
+      { name: "9. Sundhed og sygdom", points: [
+        ["Sundhedskort dá acesso ao sistema de saúde", 0],
+        ["Médico de família e hospitais públicos são gratuitos", 0],
+        ["Vacinas infantis (tétano, sarampo, HPV) são gratuitas", 1],
+        ["Tandpleje (dentista) gratuita até aos 21 anos", 0],
+      ], examQ: [
+        ["A ida ao dentista é normalmente gratuita até que idade?", "Até aos 21 anos", "2024-11"],
+        ["Qual era a esperança média de vida dos homens em 2024, aprox.?", "Cerca de 80 anos", "2025-11"],
+      ]},
+      { name: "10. Ligestilling", points: [
+        ["Proibida discriminação por sexo, raça, religião, orientação sexual, idade, deficiência", 0],
+        ["Mulheres têm direito de voto desde 1915", 1],
+        ["Primeira mulher primeira-ministra: Helle Thorning-Schmidt (2011)", 1],
+      ], examQ: [
+        ["Quem foi a primeira mulher primeira-ministra da Dinamarca?", "Helle Thorning-Schmidt", "2025-11"],
+        ["O movimento rødstrømpe fazia parte de quê?", "Do movimento feminista dos anos 1970", "2024-11"],
+      ]},
+      { name: "11. Demokrati og grundloven", points: [
+        ["Grundloven é de 1849; a última alteração foi em 1953", 1],
+        ["Liberdades garantidas: expressão, reunião, associação, religião", 0],
+        ["Monarca não tem poder político; atual rei é Frederik 10.º", 1],
+        ["Tripartição de poderes: legislativo, executivo, judicial", 0],
+      ], examQ: [
+        ["A Grundloven de 1849 já dava voto a todos homens e mulheres com 18+?", "Não", "2025-05"],
+        ["É preciso um referendo para alterar a Grundloven?", "Sim", "2026-06"],
+        ["Quando foi a última vez que a Grundloven foi alterada?", "Em 1953", "2024-11 e 2026-06"],
+        ["Que direito está protegido pela Grundloven?", "O direito de escolher livremente a religião", "2024-11"],
+        ["Sobre que tema tem havido mais referendos desde 1953?", "Sobre a relação da Dinamarca com a UE", "2025-05"],
+      ]},
+      { name: "12. Det danske retssamfund", points: [
+        ["Polícia investiga; tribunais decidem culpa e pena", 0],
+        ["Hierarquia: byret → landsret → Højesteret", 0],
+        ["Não existe pena de morte na Dinamarca", 0],
+        ["Menores de 15 anos não podem ser condenados penalmente", 0],
+      ], examQ: [
+        ["O governo pode determinar como um juiz deve decidir num caso?", "Não", "2025-11"],
+        ["Uma pena de prisão condicional significa ir logo para a prisão?", "Não", "2025-05"],
+        ["Para onde se pode recorrer de uma decisão do byret?", "Para o landsret", "2025-05"],
+      ]},
+      { name: "13. Folketing og regering", points: [
+        ["O Folketing tem 179 membros", 1],
+        ["Parlamentarismo: governo não pode ter maioria contra si", 0],
+        ["Spørgetid (perguntas a ministros) às quartas-feiras", 0],
+      ], examQ: [
+        ["Quantos membros do Folketing são eleitos nas Ilhas Faroé?", "Dois", "2024-11"],
+        ["Quem faz as leis na Dinamarca?", "O governo e o Folketing", "2024-11"],
+        ["Quantos membros tem o Folketing, no total?", "179", "2026-06"],
+      ]},
+    ]
+  },
+  {
+    when: "Semana 2–3",
+    title: "Ler os fakta-ark 14–26 no PDF oficial",
+    tip: "Anote datas, números e nomes próprios — é o tipo de detalhe mais comum nas perguntas de múltipla escolha.",
+    topics: [
+      { name: "14. Det lokale selvstyre", points: [
+        ["Municípios (kommuner) são responsáveis por, entre outros, børnehaver e escolas locais", 1],
+        ["Regiões administram os hospitais", 0],
+        ["Kommunalbestyrelse é eleita localmente", 0],
+      ], examQ: [
+        ["Quantos municípios (kommuner) há na Dinamarca?", "98", "2025-11"],
+        ["De quanto em quanto tempo há eleições municipais e regionais?", "A cada quatro anos", "2024-11"],
+      ]},
+      { name: "15. Folkestyret i praksis – valg og partier", points: [
+        ["Membros do Parlamento Europeu são eleitos diretamente pelas populações dos países da UE", 1],
+        ["Sistema eleitoral proporcional no Folketing", 0],
+        ["Vários partidos representados no Folketing", 0],
+      ], examQ: [
+        ["Que partido foi o mais votado nas eleições legislativas de 2022?", "Socialdemokratiet", "2025-05"],
+        ["O Det Konservative Folkeparti faz parte do governo atual?", "Não", "2025-05"],
+        ["Que partido faz parte do governo desde 2022?", "Venstre", "2024-11"],
+        ["Qual é mais antigo: Dansk Folkeparti ou Det Konservative Folkeparti?", "Det Konservative Folkeparti", "2025-11"],
+        ["Qual é normalmente a comparência nas eleições para o Folketing?", "Cerca de 80–90%", "2025-11"],
+      ]},
+      { name: "16. Borgernes rettigheder og pligter", points: [
+        ["Direito de voto a partir dos 18 anos", 0],
+        ["Dever de pagar impostos", 0],
+        ["CPR-nummer como identificação civil", 0],
+      ], examQ: [
+        ["É preciso ser cidadão dinamarquês para votar no folketingsvalg?", "Sim", "2025-11"],
+        ["Outras pessoas podem ver em quem se vota?", "Não — o voto é secreto", "2024-11"],
+      ]},
+      { name: "17. Religion og kirke", points: [
+        ["A maioria da população dinamarquesa é membro da Folkekirke", 1],
+        ["Liberdade religiosa garantida pela Constituição", 0],
+        ["Outras confissões reconhecidas também podem celebrar casamentos válidos", 0],
+      ], examQ: [
+        ["A maioria da população é membro da Folkekirke?", "Sim", "2024-11"],
+      ]},
+      { name: "18. Danmark og omverdenen", points: [
+        ["Dinamarca é membro da UE, ONU e NATO", 0],
+        ["Rigsfællesskabet: Dinamarca, Gronelândia e Ilhas Faroé", 0],
+      ], examQ: [
+        ["Que continente recebe a maior parte da ajuda ao desenvolvimento dinamarquesa?", "África", "2025-11"],
+        ["Que país NÃO faz parte do rigsfællesskabet?", "A Islândia (só Færøerne e Grønland fazem parte)", "2025-11"],
+      ]},
+      { name: "19. Danmarks geografi og befolkning", points: [
+        ["Ponto natural mais alto: Møllehøj, cerca de 170 metros", 1],
+        ["Esbjerg (5.ª maior cidade) fica na Jutlândia Ocidental (Vestjylland)", 1],
+        ["Gedser Odde (ilha de Falster) é o ponto mais a sul do país", 1],
+        ["Cerca de 60% da área do país é terreno agrícola", 1],
+      ], examQ: [
+        ["Que águas ficam entre Selândia e a Suécia?", "Øresund", "2025-11"],
+        ["Que águas ficam entre Selândia e Fiónia (Fyn)?", "Storebælt", "2025-05"],
+        ["O que é 'Grenen', perto de Skagen?", "O ponto mais a norte da Dinamarca", "2025-05"],
+        ["Qual tem mais habitantes: Esbjerg, Randers ou Aalborg?", "Aalborg", "2025-05"],
+        ["Qual tem mais habitantes: Odense, Aalborg ou Aarhus?", "Aarhus", "2024-11"],
+        ["Em que ilha fica o ponto mais a sul da Dinamarca?", "Falster", "2024-11"],
+      ]},
+      { name: "20. Danmarks historie før 1945", points: [
+        ["As primeiras ferrovias abriram na década de 1840", 1],
+        ["O partido Venstre foi fundado por volta de 1870", 1],
+        ["Monarquia absoluta terminou com a Grundloven de 1849", 0],
+      ], examQ: [
+        ["Que país esteve em união com a Dinamarca durante 400+ anos, até 1814?", "A Noruega", "2025-11"],
+        ["Que território a Dinamarca perdeu em 1658?", "A Escânia (Skåne)", "2024-11"],
+        ["Quando foi introduzida a Reforma protestante na Dinamarca?", "No século XVI", "2024-11"],
+      ]},
+      { name: "21. Danmarks historie efter 1945", points: [
+        ["Dinamarca foi ocupada por tropas alemãs na 2.ª Guerra Mundial (1940)", 1],
+        ["Entrada na CEE/UE em 1973", 0],
+        ["Grande vaga de imigração vinda da Turquia no final dos anos 1960", 1],
+      ], examQ: [
+        ["Em que ano a Dinamarca foi libertada da ocupação alemã?", "Em 1945", "2025-05"],
+        ["Quem ajudou financeiramente a Dinamarca por volta de 1950, com o Plano Marshall?", "Os EUA", "2024-11"],
+      ]},
+      { name: "22. Dansk kultur", points: [
+        ["Thomas Vinterberg venceu o Óscar em 2021 pelo filme \"Druk\"", 1],
+        ["Design e literatura dinamarqueses com reconhecimento internacional", 0],
+      ], examQ: [
+        ["Que grupo pop lançou 'Barbie Girl' nos anos 1990?", "Aqua", "2025-11"],
+        ["Pelo que era conhecido o poeta Yahya Hassan (1995–2020)?", "Por ser poeta (digter)", "2025-11"],
+        ["Pelo que é conhecido Søren Kierkegaard (1813–55)?", "Por ser filósofo", "2025-05"],
+        ["Quem escreveu 'O Patinho Feio' (Den Grimme Ælling)?", "H.C. Andersen", "2025-05"],
+        ["Pelo que são conhecidos Susanne Bier e Thomas Vinterberg?", "Por serem realizadores de cinema", "2024-11"],
+      ]},
+      { name: "23. Traditioner og mærkedage", points: [
+        ["Grundlovsdag é celebrado a 5 de junho", 1],
+        ["Jul (Natal) e Páscoa são as maiores festas do calendário", 0],
+      ], examQ: [
+        ["Em que mês se celebra o Sankt Hans?", "Em junho", "2025-05"],
+        ["Em que data se celebra o Grundlovsdag?", "5 de junho", "2025-11 e 2026-06"],
+      ]},
+      { name: "24. Danmarks forsvars- og sikkerhedspolitik", points: [
+        ["O serviço militar (værnepligt) aplica-se a homens e mulheres", 1],
+        ["Dinamarca é membro da NATO desde 1949", 1],
+      ], examQ: [
+        ["Em que ano a Dinamarca se tornou membro da NATO?", "1949", "2025-05"],
+        ["O que foi decidido em 2024 sobre o værnepligt?", "Continua a ser convocado o mesmo número de recrutas (agora também mulheres)", "2025-05"],
+        ["Para onde a Dinamarca enviou soldados como parte da ONU nos anos 1990?", "Bósnia", "2025-11"],
+        ["Para onde a Dinamarca enviou soldados em 2003, após invasão liderada pelos EUA?", "Iraque", "2024-11"],
+      ]},
+      { name: "25. Diskrimination, antisemitisme, hadforbrydelser og ekstremisme", points: [
+        ["Legislação proíbe discriminação e crimes de ódio", 0],
+        ["Autoridades trabalham ativamente contra antissemitismo e extremismo", 0],
+      ], examQ: []},
+      { name: "26. Klima", points: [
+        ["Metas nacionais de redução de emissões e neutralidade climática", 0],
+        ["Forte investimento em energia eólica", 0],
+      ], examQ: []},
+    ]
+  }
+];
+ 
+const simplePhases = [
+  {
+    when: "Semana 3",
+    title: "Primeiras provas de treino",
+    tip: "Não repita a mesma prova — cada edição antiga é um treino novo, e o formato das perguntas costuma repetir-se entre elas.",
+    items: [
+      "Fazer 1 prova antiga cronometrada (30 min), sem consultar nada",
+      "Corrigir com o retteark e listar os temas onde errei",
+      "Fazer uma 2.ª prova antiga cronometrada",
+      "Corrigir e atualizar a lista de pontos fracos",
+    ]
+  },
+  {
+    when: "Últimos dias",
+    title: "Revisão final e reforço dos pontos fracos",
+    tip: "Meta: chegar ao dia da prova a acertar de forma consistente 20+ de 25 nas provas de treino.",
+    items: [
+      "Reler apenas os fakta-ark dos temas onde errei",
+      "Fazer mais 2 provas antigas cronometradas",
+      "Confirmar local, hora e documentos necessários para a prova",
+      "Descansar bem na véspera",
+    ]
+  }
+];
+ 
+const timeline = document.getElementById('timeline');
+let markerNum = 1;
+ 
+function pointLI(text, starred){
+  return `<li>
+    <span class="check">${CHECK_SVG}</span>
+    <span class="item-text">${text}</span>
+    ${starred ? '<span class="star-badge">★</span>' : ''}
+  </li>`;
+}
+ 
+function examLI(q, a, edition){
+  return `<li>
+    <span class="check">${CHECK_SVG}</span>
+    <span class="item-text">P: ${q}<span class="a-line">R: ${a}</span></span>
+    <span class="edition-badge">${edition}</span>
+  </li>`;
+}
+ 
+function topicHTML(topic, phaseIdx, topicIdx){
+  const pointsHTML = topic.points.map(p => pointLI(p[0], p[1])).join('');
+  const examHTML = topic.examQ.map(e => examLI(e[0], e[1], e[2])).join('');
+  const examBlock = topic.examQ.length ? `
+    <div class="sub-label examq">Perguntas de provas anteriores</div>
+    <ul class="subitems">${examHTML}</ul>` : '';
+ 
+  return `<div class="topic" data-phase="${phaseIdx}" data-topic="${topicIdx}">
+    <div class="topic-head">
+      ${ARROW_SVG}
+      <span class="topic-name">${topic.name}</span>
+      <span class="topic-count" data-role="count"></span>
+    </div>
+    <div class="topic-body">
+      <div class="sub-label">Pontos-chave</div>
+      <ul class="subitems">${pointsHTML}</ul>
+      ${examBlock}
+    </div>
+  </div>`;
+}
+ 
+data.forEach((phase, phaseIdx) => {
+  const topicsHTML = phase.topics.map((t, tIdx) => topicHTML(t, phaseIdx, tIdx)).join('');
+  const card = document.createElement('div');
+  card.className = 'phase';
+  card.innerHTML = `
+    <div class="marker">${markerNum++}</div>
+    <div class="phase-card">
+      <div class="phase-when">${phase.when}</div>
+      <h2 class="phase-title">${phase.title}</h2>
+      ${topicsHTML}
+      <div class="tip"><b>Dica:</b> ${phase.tip}</div>
+    </div>`;
+  timeline.appendChild(card);
+});
+ 
+simplePhases.forEach(phase => {
+  const itemsHTML = phase.items.map(text => `<li>
+    <span class="check">${CHECK_SVG}</span>
+    <span class="item-text">${text}</span>
+  </li>`).join('');
+  const card = document.createElement('div');
+  card.className = 'phase';
+  card.innerHTML = `
+    <div class="marker">${markerNum++}</div>
+    <div class="phase-card">
+      <div class="phase-when">${phase.when}</div>
+      <h2 class="phase-title">${phase.title}</h2>
+      <ul class="items">${itemsHTML}</ul>
+      <div class="tip"><b>Dica:</b> ${phase.tip}</div>
+    </div>`;
+  timeline.appendChild(card);
+});
+ 
+// interactions
+document.querySelectorAll('.topic-head').forEach(head => {
+  head.addEventListener('click', () => {
+    head.closest('.topic').classList.toggle('open');
+  });
+});
+ 
+function updateTopicCount(topicEl){
+  const subs = topicEl.querySelectorAll('.subitems li');
+  const done = topicEl.querySelectorAll('.subitems li.done').length;
+  topicEl.querySelector('[data-role="count"]').textContent = done + '/' + subs.length;
+}
+ 
+document.querySelectorAll('.topic').forEach(t => updateTopicCount(t));
+ 
+const fill = document.getElementById('fill');
+const label = document.getElementById('label');
+ 
+function updateProgress(){
+  const all = document.querySelectorAll('.subitems li, ul.items > li');
+  const done = document.querySelectorAll('.subitems li.done, ul.items > li.done');
+  const total = all.length;
+  fill.style.width = (total ? (done.length/total*100) : 0) + '%';
+  label.textContent = done.length + ' de ' + total;
+}
+ 
+document.querySelectorAll('.subitems li').forEach(li => {
+  li.addEventListener('click', () => {
+    li.classList.toggle('done');
+    updateTopicCount(li.closest('.topic'));
+    updateProgress();
+  });
+});
+ 
+document.querySelectorAll('ul.items > li').forEach(li => {
+  li.addEventListener('click', () => {
+    li.classList.toggle('done');
+    updateProgress();
+  });
+});
+ 
+updateProgress();
+</script>
+ 
+</body>
+</html>
